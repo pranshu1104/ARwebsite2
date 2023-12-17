@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AR Water Molecule</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      #ar-view {
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ar-view"></div>
+
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.0/aframe/build/aframe-ar.js"></script>
+
+    <script>
+      AFRAME.registerComponent("water-molecule", {
+        init: function () {
+          // Create the water molecule model
+          const molecule = document.createElement("a-entity");
+          molecule.setAttribute("gltf-model", "url(models/water_molecule.glb)");
+          molecule.setAttribute("scale", "0.1 0.1 0.1");
+          molecule.setAttribute("position", "0 0 -1");
+          this.el.appendChild(molecule);
+        },
+      });
+
+      AFRAME.registerComponent("ar-setup", {
+        init: function () {
+          // Set up AR camera and marker tracking
+          this.el.sceneEl.addEventListener("loaded", () => {
+            const arToolkitContext = this.el.sceneEl.systems.arjs.arToolkitContext;
+            arToolkitContext.parameters.cameraParametersUrl = "data/camera_para.dat";
+            arToolkitContext.parameters.markerDetectionMode = "mono";
+            arToolkitContext.parameters.maxDetectionRate = 60;
+          });
+        },
+      });
+    </script>
+
+    <a-scene embedded arjs="sourceType: webcam;">
+      <a-marker preset="hiro">
+        <a-entity water-molecule></a-entity>
+      </a-marker>
+      <a-entity camera ar-setup></a-entity>
+    </a-scene>
+  </body>
+</html>
